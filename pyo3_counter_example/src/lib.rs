@@ -21,15 +21,15 @@ impl Counter {
     }
 }
 
-#[pyfunction]
-fn increment_counter(counter: &PyCell<Counter>) {
-    let mut counter = counter.borrow_mut();
-    counter.increment();
-}
+// #[pyfunction]
+// fn increment_counter(counter: &PyCell<Counter>) {
+//     let mut counter = counter.borrow_mut();
+//     counter.increment();
+// }
 
 #[pymodule]
-fn pyo3_counter_example(py: Python, m: &PyModule) -> PyResult<()> {
+fn pyo3_counter_example(m: &PyModule) -> PyResult<()> {
     m.add_class::<Counter>()?;
-    m.add_function(wrap_pyfunction!(increment_counter, m)?)?;
+    // m.add_function(wrap_pyfunction!(increment_counter, m)?)?;
     Ok(())
 }
