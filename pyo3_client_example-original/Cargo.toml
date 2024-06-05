@@ -1,10 +1,10 @@
 [package]
-name = "pyo3_client_example"
+name = "minimal_pyo3_extension"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-pyo3 = { version = "0.21.2", features = ["extension-module"] }
+pyo3 = { version = "0.21.2", features = ["extension-module", "gil-refs"] }
 reqwest = { version = "0.12.4", features = ["blocking"] }
 serde = { version = "1.0.203", features = ["derive"] }
 
@@ -13,3 +13,4 @@ crate-type = ["cdylib"]
 
 [profile.release]
 strip = true
+
