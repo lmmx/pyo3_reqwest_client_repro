@@ -1,0 +1,14 @@
+[package]
+name = "pyo3_file_handler_example"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+pyo3 = { version = "0.21.2", features = ["extension-module"] }
+serde = { version = "1.0.203", features = ["derive"] }
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+strip = true
