@@ -1,7 +1,7 @@
 from pytest import mark
 from random import randint
 
-from pyo3_client_example import ReqwestClient
+from pyo3_client_example_rustls_tls import ReqwestClient
 
 
 @mark.parametrize("url, expected", [("https://jsonplaceholder.typicode.com/todos/",
