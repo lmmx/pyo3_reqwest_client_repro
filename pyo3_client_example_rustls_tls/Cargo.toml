@@ -1,0 +1,15 @@
+[package]
+name = "pyo3_client_example_rustls_tls"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+pyo3 = { version = "0.21.2", features = ["extension-module"] }
+reqwest = { version = "0.12.4", default_features = false, features = ["blocking", "rustls-tls"] }
+serde = { version = "1.0.203", features = ["derive"] }
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+strip = true
