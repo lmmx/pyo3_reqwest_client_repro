@@ -1,0 +1,16 @@
+[package]
+name = "pyo3_sleep_example"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+pyo3 = { version = "0.21.0", features = ["extension-module"] }
+# Temporary fix by David Hewitt as pyo3-asyncio maintainer has given up
+pyo3-asyncio-0-21 = { version = "0.21.0", features = ["attributes", "tokio-runtime"] }
+tokio = { version = "1.38.0", features = ["full"] }
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+strip = true
