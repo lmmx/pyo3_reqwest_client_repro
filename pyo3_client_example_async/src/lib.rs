@@ -20,7 +20,7 @@ impl ReqwestClient {
         Ok(ReqwestClient { client, runtime })
     }
 
-    fn get<'a>(&'a self, py: Python<'a>, url: &'a str) -> PyResult<&'a PyAny> {
+    fn get<'a>(&'a self, py: Python<'a>, url: &'a str) -> PyResult<Bound<'_, PyAny>> {
         let client = self.client.clone();
         let url = url.to_string();
 
@@ -32,7 +32,7 @@ impl ReqwestClient {
 
         future_into_py(py, async move {
             task::spawn(fut).await.unwrap_or_else(|e| Err(PyIOError::new_err(e.to_string())))
-        }).map(|bound| bound.into())
+        })
     }
 }
 

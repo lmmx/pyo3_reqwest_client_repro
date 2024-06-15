@@ -1,11 +1,20 @@
+from asyncio import gather
+import json
+from pytest import mark
+
 from pytest import mark
 from random import randint
 
 from pyo3_client_example_async import ReqwestClient
 
 
-@mark.parametrize("url, expected", [("https://jsonplaceholder.typicode.com/todos/",
-("""\
+@mark.parametrize(
+    "url, expected",
+    [
+        (
+            "https://jsonplaceholder.typicode.com/todos/",
+            (
+                """\
 {
   "userId": 1,
   "id": 1,
@@ -13,7 +22,7 @@ from pyo3_client_example_async import ReqwestClient
   "completed": false
 }\
 """,
-"""\
+                """\
 {
   "userId": 1,
   "id": 2,
@@ -21,23 +30,36 @@ from pyo3_client_example_async import ReqwestClient
   "completed": false
 }\
 """,
+            ),
+        )
+    ],
 )
-)])
-def test_client_get(url, expected):
+@mark.asyncio
+async def test_client_get(url, expected):
     url1 = url + "1"
     url2 = url + "2"
     expected1, expected2 = expected
     client = ReqwestClient()
-    response1 = client.get(url1)
+    response1 = await client.get(url1)
     assert response1 == expected1
-    response2 = client.get(url2)
+    response2 = await client.get(url2)
     assert response2 == expected2
 
 
+@mark.asyncio
 @mark.parametrize("url", ["https://jsonplaceholder.typicode.com/todos/"])
-def test_client_get_multi(url):
+async def test_client_get_multi(url):
     client = ReqwestClient()
-    for i in range(1, 31):
-        idx = randint(1,1000)
+
+    async def run_get():
+        idx = randint(1, 100)
         url_i = f"{url}{idx}"
-        response_i = client.get(url_i)
+        response_i = await client.get(url_i)
+        return response_i
+
+    num_tasks = 1000
+    tasks = [run_get() for _ in range(num_tasks)]
+    results = await gather(*tasks)
+    for r in results:
+        parsed = json.loads(r)
+        assert parsed.get("id") in range(1, 101)
