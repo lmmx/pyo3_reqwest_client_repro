@@ -30,14 +30,9 @@ impl ReqwestClient {
             Ok(text)
         };
 
-        let py_future = future_into_py(py, async move {
-            match task::spawn(fut).await {
-                Ok(result) => result,
-                Err(err) => Err(PyIOError::new_err(err.to_string())),
-            }
-        })?;
-
-        Ok(py_future)
+        future_into_py(py, async move {
+            task::spawn(fut).await.unwrap_or_else(|e| Err(PyIOError::new_err(e.to_string())))
+        }).map(|bound| bound.into())
     }
 }
 
