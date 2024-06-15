@@ -1,8 +1,9 @@
 use pyo3::exceptions::PyIOError;
 use pyo3::prelude::*;
-use pyo3_asyncio::tokio::future_into_py;
+use pyo3_asyncio_0_21::tokio::future_into_py;
 use reqwest::Client;
 use tokio::runtime::Runtime;
+use tokio::task;
 
 #[pyclass]
 struct ReqwestClient {
@@ -29,7 +30,14 @@ impl ReqwestClient {
             Ok(text)
         };
 
-        future_into_py(py, self.runtime.spawn(fut))
+        let py_future = future_into_py(py, async move {
+            match task::spawn(fut).await {
+                Ok(result) => result,
+                Err(err) => Err(PyIOError::new_err(err.to_string())),
+            }
+        })?;
+
+        Ok(py_future)
     }
 }
 
