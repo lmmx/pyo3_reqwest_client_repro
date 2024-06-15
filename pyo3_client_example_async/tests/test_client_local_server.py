@@ -24,7 +24,7 @@ async def test_client_get_multi_test_server(url):
             return response_i
 
     num_tasks = 10000
-    tasks = [run_get(i) for i in range(num_tasks)]
+    tasks = (run_get(i) for i in range(num_tasks))
     results = await gather(*tasks)
     for idx, r in enumerate(results):
         parsed = json.loads(r)
