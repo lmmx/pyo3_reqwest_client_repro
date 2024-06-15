@@ -1,17 +1,8 @@
 import pyo3_sleep_example
+from pytest import mark
 
-def test_increment():
-    c = pyo3_sleep_example.Counter()
-    assert c.get_value() == 0
-    c.increment()
-    assert c.get_value() == 1
-    c.increment()
-    assert c.get_value() == 2
-
-def test_sleep():
-    c = pyo3_sleep_example.Counter()
-    assert c.get_value() == 0
-    c.increment()
-    assert c.get_value() == 1
-    c.increment()
-    assert c.get_value() == 2
+@mark.asyncio
+async def test_sleep(capfd):
+    await pyo3_sleep_example.rust_sleep()
+    captured = capfd.readouterr()
+    assert captured.out == "hello from rust!\n"
