@@ -1,7 +1,8 @@
+use pyo3::exceptions::PyIOError;
 use pyo3::prelude::*;
+use pyo3_asyncio::tokio::future_into_py;
 use reqwest::Client;
 use tokio::runtime::Runtime;
-use pyo3::exceptions::PyIOError;
 
 #[pyclass]
 struct ReqwestClient {
@@ -18,17 +19,17 @@ impl ReqwestClient {
         Ok(ReqwestClient { client, runtime })
     }
 
-    fn get(&self, url: &str) -> PyResult<String> {
+    fn get<'a>(&'a self, py: Python<'a>, url: &'a str) -> PyResult<&'a PyAny> {
         let client = self.client.clone();
         let url = url.to_string();
-        
-        let result = self.runtime.block_on(async move {
+
+        let fut = async move {
             let response = client.get(&url).send().await.map_err(|e| PyIOError::new_err(e.to_string()))?;
             let text = response.text().await.map_err(|e| PyIOError::new_err(e.to_string()))?;
             Ok(text)
-        });
+        };
 
-        result
+        future_into_py(py, self.runtime.spawn(fut))
     }
 }
 
