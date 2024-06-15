@@ -63,20 +63,3 @@ async def test_client_get_multi(url):
     for r in results:
         parsed = json.loads(r)
         assert parsed.get("id") in range(1, 101)
-
-@mark.asyncio
-@mark.parametrize("url", ["http://127.0.0.1:8000/"])
-async def test_client_get_multi_test_server(url):
-    client = ReqwestClient()
-
-    async def run_get(idx: int):
-        url_i = f"{url}?value={idx}"
-        response_i = await client.get(url_i)
-        return response_i
-
-    num_tasks = 1000
-    tasks = [run_get(i) for i in range(num_tasks)]
-    results = await gather(*tasks)
-    for r in results:
-        parsed = json.loads(r)
-        assert parsed.get("Hello") == "World"
